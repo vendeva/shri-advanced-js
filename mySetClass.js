@@ -7,42 +7,34 @@ class MySet {
                 this.unique.push(elem);
             }
         }
-        this[Symbol.iterator] = () => {
-            this.index = 0;
-            return this;
-        };
+        this[Symbol.iterator] = this.iterator()[Symbol.iterator];
         this.size = this.unique.length;
         this[Symbol.toStringTag] = "MySet";
     }
-    next = () => {
-        if (this.index !== this.size) {
-            const value = this.unique[this.index];
-            this.index++;
-            return { done: false, value };
-        } else {
-            return { done: true };
-        }
-    };
 
     values = () => this[Symbol.iterator]();
 
     keys = () => this[Symbol.iterator]();
 
-    entries = () => {
+    iterator = () => {
         const self = this;
-        let index = 0;
         return {
-            [Symbol.iterator]() {
+            *[Symbol.iterator]() {
+                for (let i = 0; i < self.size; ++i) yield self.unique[i];
                 return this;
             },
-            next() {
-                if (index !== self.size) {
-                    const value = self.unique[index];
-                    index++;
-                    return { done: false, value: [value, value] };
-                } else {
-                    return { done: true };
+        };
+    };
+
+    entries = () => {
+        const self = this;
+        return {
+            *[Symbol.iterator]() {
+                for (let i = 0; i < self.size; ++i) {
+                    const value = self.unique[i];
+                    yield [value, value];
                 }
+                return this;
             },
         };
     };
